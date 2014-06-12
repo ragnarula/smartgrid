@@ -14,13 +14,13 @@ namespace ns3
 		private:
 			static uint32_t hanId;
 			Ptr<Node> esp;
-			NodeContainer wifiNodes;
 			Ptr<Node> wifiAp;
+			NodeContainer wifiNodes;
 			NetDeviceContainer wifiDevices;
 			NetDeviceContainer wifiApDevice;
 
 			void InitWifiNodes();
-		
+			void InitIpv4();	
 		public:
 			HomeAreaNetwork();
 			virtual ~HomeAreaNetwork();

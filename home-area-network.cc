@@ -4,6 +4,7 @@
 #include "ns3/core-module.h"
 #include "ns3/mobility-module.h"
 #include <sstream>
+#include "ns3/internet-module.h"
 
 using namespace ns3;
 
@@ -14,8 +15,8 @@ uint32_t HomeAreaNetwork::hanId = 0;
 
 HomeAreaNetwork::HomeAreaNetwork() : Object(), 
 	esp(CreateObject<Node>()), 
-	wifiNodes(),
 	wifiAp(CreateObject<Node>()),
+	wifiNodes(),
 	wifiDevices(),
 	wifiApDevice()	
 {
@@ -50,12 +51,12 @@ void HomeAreaNetwork::InitWifiNodes(){
 	//install devices to wifi nodes nodes	
 	wifiDevices = wifi.Install(phy,mac,wifiNodes);
 	//install device to esp node
-	wifiDevices = wifi.Install(phy,mac,esp);
+	wifiDevices.Add (wifi.Install(phy,mac,esp));
 	//set mac for AP
 	mac.SetType ("ns3::ApWifiMac",
 			"Ssid", SsidValue (ssid));
 	//install device on AP
-	wifiDevices = wifi.Install(phy,mac,wifiAp);
+	wifiDevices.Add (wifi.Install(phy,mac,wifiAp));
 	//Position Allocation
 	MobilityHelper mobility;
 	
@@ -71,7 +72,18 @@ void HomeAreaNetwork::InitWifiNodes(){
 	mobility.Install (wifiAp);
 	mobility.Install (wifiNodes);
 	mobility.Install (esp);
+
+	//install internet Stack
+	InternetStackHelper stack;
+	stack.Install (wifiNodes);
+	stack.Install (wifiAp);
+	stack.Install (esp);
 }
 
+void HomeAreaNetwork::InitIpv4(){
+	Ipv4AddressHelper address;
 
-
+	address.SetBase ("192.168.1.0", "255.255.255.0");
+	Ipv4InterfaceContainer p2pInterfaces;
+	p2pInterfaces = address.Assign (wifiDevices);
+}

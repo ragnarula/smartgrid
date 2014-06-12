@@ -8,6 +8,10 @@
 
 using namespace ns3;
 int main (){
+	LogComponentEnableAll(LOG_LEVEL_ERROR);
 	Ptr<HomeAreaNetwork> app = CreateObject<HomeAreaNetwork> ();
-
+	Simulator::Stop (Seconds (10.0));
+	Simulator::Run();
+	Simulator::Destroy();
+	return 0;
 }
